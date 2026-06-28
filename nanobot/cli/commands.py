@@ -184,7 +184,7 @@ def gateway(
     
     if not api_key:
         console.print("[red]Error: No API key configured.[/red]")
-        console.print("Set one in ~/.nanobot/config.json under providers.openrouter.apiKey")
+        console.print("Set one in ~/.nanobot/config.json under providers.openrouter, providers.deepseek, providers.anthropic, or providers.openai")
         raise typer.Exit(1)
     
     provider = LiteLLMProvider(
@@ -315,6 +315,7 @@ def agent(
             console.print(f"\n{__logo__} {response}")
         
         asyncio.run(run_once())
+        console.print("\njfq test!")
     else:
         # Interactive mode
         console.print(f"{__logo__} Interactive mode (Ctrl+C to exit)\n")
@@ -624,10 +625,12 @@ def status():
         has_openrouter = bool(config.providers.openrouter.api_key)
         has_anthropic = bool(config.providers.anthropic.api_key)
         has_openai = bool(config.providers.openai.api_key)
-        
+        has_deepseek = bool(config.providers.deepseek.api_key)
+
         console.print(f"OpenRouter API: {'[green]✓[/green]' if has_openrouter else '[dim]not set[/dim]'}")
-        console.print(f"Anthropic API: {'[green]✓[/green]' if has_anthropic else '[dim]not set[/dim]'}")
-        console.print(f"OpenAI API: {'[green]✓[/green]' if has_openai else '[dim]not set[/dim]'}")
+        console.print(f"DeepSeek API:   {'[green]✓[/green]' if has_deepseek else '[dim]not set[/dim]'}")
+        console.print(f"Anthropic API:  {'[green]✓[/green]' if has_anthropic else '[dim]not set[/dim]'}")
+        console.print(f"OpenAI API:     {'[green]✓[/green]' if has_openai else '[dim]not set[/dim]'}")
 
 
 if __name__ == "__main__":

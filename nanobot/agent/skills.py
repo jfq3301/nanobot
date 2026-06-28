@@ -5,6 +5,7 @@ import os
 import re
 import shutil
 from pathlib import Path
+from rich.console import Console
 
 # Default builtin skills directory (relative to this file)
 BUILTIN_SKILLS_DIR = Path(__file__).parent.parent / "skills"
@@ -40,6 +41,7 @@ class SkillsLoader:
             for skill_dir in self.workspace_skills.iterdir():
                 if skill_dir.is_dir():
                     skill_file = skill_dir / "SKILL.md"
+                    # Console().print(f"jfq workspace: {skill_file}")
                     if skill_file.exists():
                         skills.append({"name": skill_dir.name, "path": str(skill_file), "source": "workspace"})
         
@@ -48,6 +50,7 @@ class SkillsLoader:
             for skill_dir in self.builtin_skills.iterdir():
                 if skill_dir.is_dir():
                     skill_file = skill_dir / "SKILL.md"
+                    # Console().print(f"jfq buildin: {skill_file}")
                     if skill_file.exists() and not any(s["name"] == skill_dir.name for s in skills):
                         skills.append({"name": skill_dir.name, "path": str(skill_file), "source": "builtin"})
         
@@ -195,7 +198,9 @@ class SkillsLoader:
         result = []
         for s in self.list_skills(filter_unavailable=True):
             meta = self.get_skill_metadata(s["name"]) or {}
+            # print(f"jfq skill meta: {s['name']} -> {meta}")
             ocmeta = self._parse_openclaw_metadata(meta.get("metadata", ""))
+            # print(f"jfq skill ocmeta: {s['name']} -> {ocmeta}")
             if ocmeta.get("always") or meta.get("always"):
                 result.append(s["name"])
         return result

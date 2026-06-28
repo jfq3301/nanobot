@@ -26,17 +26,22 @@ class LiteLLMProvider(LLMProvider):
         super().__init__(api_key, api_base)
         self.default_model = default_model
         
-        # Detect OpenRouter by api_key prefix or explicit api_base
+        # Detect provider by api_key prefix or explicit api_base or model prefix
         self.is_openrouter = (
             (api_key and api_key.startswith("sk-or-")) or
             (api_base and "openrouter" in api_base)
         )
-        
+        self.is_deepseek = (
+            (api_base and "deepseek" in api_base) or
+            ("deepseek" in default_model)
+        ) and not self.is_openrouter
+
         # Configure LiteLLM based on provider
         if api_key:
             if self.is_openrouter:
-                # OpenRouter mode - set key
                 os.environ["OPENROUTER_API_KEY"] = api_key
+            elif self.is_deepseek:
+                os.environ.setdefault("DEEPSEEK_API_KEY", api_key)
             elif "anthropic" in default_model:
                 os.environ.setdefault("ANTHROPIC_API_KEY", api_key)
             elif "openai" in default_model or "gpt" in default_model:

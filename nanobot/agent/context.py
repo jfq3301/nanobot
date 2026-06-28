@@ -52,11 +52,13 @@ class ContextBuilder:
         always_skills = self.skills.get_always_skills()
         if always_skills:
             always_content = self.skills.load_skills_for_context(always_skills)
+            # print(f"jfq always_skills: {always_skills}")
             if always_content:
                 parts.append(f"# Active Skills\n\n{always_content}")
         
         # 2. Available skills: only show summary (agent uses read_file to load)
         skills_summary = self.skills.build_skills_summary()
+        # print(f"jfq skills_summary: {skills_summary}")
         if skills_summary:
             parts.append(f"""# Skills
 
@@ -103,6 +105,7 @@ When remembering something, write to {workspace_path}/memory/MEMORY.md"""
         
         for filename in self.BOOTSTRAP_FILES:
             file_path = self.workspace / filename
+            # print(f"jfq bootstrap: {file_path}")
             if file_path.exists():
                 content = file_path.read_text(encoding="utf-8")
                 parts.append(f"## {filename}\n\n{content}")

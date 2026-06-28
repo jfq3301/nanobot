@@ -148,6 +148,7 @@ class AgentLoop:
             )
             
             # Handle tool calls
+            logger.info(f"jfq LLM response: {response.content}, tool calls: {len(response.tool_calls)}, iteration: {iteration}")
             if response.has_tool_calls:
                 # Add assistant message with tool calls
                 tool_call_dicts = [
@@ -167,8 +168,9 @@ class AgentLoop:
                 
                 # Execute tools
                 for tool_call in response.tool_calls:
-                    logger.debug(f"Executing tool: {tool_call.name}")
+                    logger.info(f"jfq 1 Executing tool: {tool_call.name} with args: {tool_call.arguments}")
                     result = await self.tools.execute(tool_call.name, tool_call.arguments)
+                    logger.info(f"jfq 1 Tool result: {tool_call.name} -> {result}")
                     messages = self.context.add_tool_result(
                         messages, tool_call.id, tool_call.name, result
                     )

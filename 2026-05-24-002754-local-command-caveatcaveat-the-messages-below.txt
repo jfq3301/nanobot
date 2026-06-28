@@ -1,0 +1,105 @@
+ ▐▛███▜▌   Claude Code v2.1.150
+▝▜█████▛▘  Sonnet 4.6 · Claude Pro
+  ▘▘ ▝▝    ~/3_project-github/nanobot-4000/nanobot
+
+❯ /clear                                                                        
+  ⎿  (no content)
+
+❯ give me the workflow of "nanobot agent -m "What is 2+2?""                     
+
+● Let me trace the execution path through the codebase.
+
+  Read 2 files (ctrl+o to expand)
+
+● Let me also read the context builder and provider to complete the picture.
+
+  Read 2 files (ctrl+o to expand)
+
+● Here is the complete execution flow:
+
+  nanobot agent -m "What is 2+2?"
+
+  ---
+  1. CLI Entry — commands.py:277 (agent())
+
+  - Typer parses --message "What is 2+2?" and --session "cli:default"
+  - Loads config from ~/.nanobot/config.json
+  - Instantiates three objects:
+    - MessageBus — async queue (not used in single-shot mode)
+    - LiteLLMProvider — wraps LiteLLM, sets API key/base from config
+    - AgentLoop — registers default tools (filesystem, shell, web, message)
+
+  2. Single-shot Dispatch — commands.py:313
+
+  response = await agent_loop.process_direct(message, session_id)
+
+  3. process_direct — loop.py:194
+
+  Wraps the string in an InboundMessage(channel="cli", sender_id="user", ...)
+  and calls _process_message(msg).
+
+  4. _process_message — loop.py:110
+
+  4a. Session
+
+  SessionManager.get_or_create("cli:default") — loads or creates a JSONL history
+   file.
+
+  4b. Context assembly — context.py:112 (build_messages)
+
+  Builds the LLM message list in this order:
+  [system prompt]  ← identity + AGENTS.md/SOUL.md/USER.md + memory + skills
+  summary
+  [history]        ← prior turns from JSONL session
+  [user message]   ← "What is 2+2?"
+
+  4c. Agent loop (max 20 iterations) — loop.py:140
+
+  iteration 1:
+    → LiteLLMProvider.chat(messages, tools=[...8 tools...])
+        → litellm.acompletion(model, messages, tools, tool_choice="auto")
+        → LLM API (OpenRouter/Anthropic/OpenAI)
+        ← response: content="4", tool_calls=[]
+
+    response.has_tool_calls == False  → break
+    final_content = "4"
+
+  For this simple math question, the LLM answers directly — no tools are called,
+   loop exits after 1 iteration.
+
+  If tools were called (e.g. web search), each tool result is appended as a
+  "tool" role message and the loop continues.
+
+  4d. Session save
+
+  Appends user: "What is 2+2?" and assistant: "4" to the JSONL session file.
+
+  5. Output — commands.py:315
+
+  console.print(f"\n🐈 4")
+
+  ---
+  Summary diagram
+
+  CLI (Typer)
+    └─ agent()
+         ├─ load_config()
+         ├─ LiteLLMProvider(api_key, model)
+         ├─ AgentLoop(bus, provider, workspace)
+         │    └─ _register_default_tools()  ← 8 tools
+         └─ process_direct("What is 2+2?", "cli:default")
+              └─ _process_message(InboundMessage)
+                   ├─ SessionManager.get_or_create()
+                   ├─ ContextBuilder.build_messages()
+                   │    ├─ system prompt (identity + workspace files + memory +
+  skills)
+                   │    ├─ session history
+                   │    └─ "What is 2+2?"
+                   └─ [loop] LiteLLMProvider.chat()
+                             └─ litellm.acompletion() → LLM API
+                                  └─ "4"  (no tool calls → done)
+                   └─ session.save()  → JSONL
+                   └─ return "4"
+    └─ print("🐈 4")
+
+✻ Sautéed for 41s
