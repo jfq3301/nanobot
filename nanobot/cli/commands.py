@@ -355,13 +355,27 @@ def channels_status():
     table = Table(title="Channel Status")
     table.add_column("Channel", style="cyan")
     table.add_column("Enabled", style="green")
-    table.add_column("Bridge URL", style="yellow")
+    table.add_column("Config", style="yellow")
     
     wa = config.channels.whatsapp
     table.add_row(
         "WhatsApp",
         "✓" if wa.enabled else "✗",
         wa.bridge_url
+    )
+
+    tg = config.channels.telegram
+    table.add_row(
+        "Telegram",
+        "✓" if tg.enabled else "✗",
+        "token set" if tg.token else "token missing"
+    )
+
+    fs = config.channels.feishu
+    table.add_row(
+        "Feishu",
+        "✓" if fs.enabled else "✗",
+        "app credentials set" if fs.app_id and fs.app_secret else "app credentials missing"
     )
     
     console.print(table)

@@ -109,12 +109,13 @@ That's it! You have a working AI assistant in 2 minutes.
 
 ## 💬 Chat Apps
 
-Talk to your nanobot through Telegram or WhatsApp — anytime, anywhere.
+Talk to your nanobot through Telegram, WhatsApp, or Feishu — anytime, anywhere.
 
 | Channel | Setup |
 |---------|-------|
 | **Telegram** | Easy (just a token) |
 | **WhatsApp** | Medium (scan QR) |
+| **Feishu** | Medium (custom app + event subscription) |
 
 <details>
 <summary><b>Telegram</b> (Recommended)</summary>
@@ -185,6 +186,42 @@ nanobot gateway
 
 </details>
 
+<details>
+<summary><b>Feishu</b></summary>
+
+Uses Feishu/Lark event WebSocket, so local development does not need a public callback URL.
+
+**1. Create an app**
+- Create a custom app in Feishu Developer Console
+- Enable bot capability
+- Enable event subscription and add `im.message.receive_v1`
+- Copy the app ID and app secret
+
+**2. Configure**
+
+```json
+{
+  "channels": {
+    "feishu": {
+      "enabled": true,
+      "appId": "cli_xxx",
+      "appSecret": "xxx",
+      "allowFrom": ["ou_xxx"]
+    }
+  }
+}
+```
+
+`allowFrom` accepts Feishu `open_id` values first, with `user_id` also supported by the channel.
+
+**3. Run**
+
+```bash
+nanobot gateway
+```
+
+</details>
+
 ## ⚙️ Configuration
 
 <details>
@@ -210,6 +247,12 @@ nanobot gateway
     },
     "whatsapp": {
       "enabled": false
+    },
+    "feishu": {
+      "enabled": false,
+      "appId": "cli_xxx",
+      "appSecret": "xxx",
+      "allowFrom": ["ou_xxx"]
     }
   },
   "tools": {

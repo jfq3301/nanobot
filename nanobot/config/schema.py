@@ -19,10 +19,21 @@ class TelegramConfig(BaseModel):
     allow_from: list[str] = Field(default_factory=list)  # Allowed user IDs or usernames
 
 
+class FeishuConfig(BaseModel):
+    """Feishu/Lark channel configuration."""
+    enabled: bool = False
+    app_id: str = ""  # Feishu app ID
+    app_secret: str = ""  # Feishu app secret
+    encrypt_key: str = ""  # Optional event encrypt key
+    verification_token: str = ""  # Optional event verification token
+    allow_from: list[str] = Field(default_factory=list)  # Allowed open_id/user_id values
+
+
 class ChannelsConfig(BaseModel):
     """Configuration for chat channels."""
     whatsapp: WhatsAppConfig = Field(default_factory=WhatsAppConfig)
     telegram: TelegramConfig = Field(default_factory=TelegramConfig)
+    feishu: FeishuConfig = Field(default_factory=FeishuConfig)
 
 
 class AgentDefaults(BaseModel):
