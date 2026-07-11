@@ -65,6 +65,17 @@ class ChannelManager:
             except ImportError as e:
                 logger.warning(f"Feishu channel not available: {e}")
 
+        # DingTalk/DingDing channel
+        if self.config.channels.dingtalk.enabled:
+            try:
+                from nanobot.channels.dingding import DingDingChannel
+                self.channels["dingding"] = DingDingChannel(
+                    self.config.channels.dingtalk, self.bus
+                )
+                logger.info("DingTalk channel enabled")
+            except ImportError as e:
+                logger.warning(f"DingTalk channel not available: {e}")
+
         # QQ channel
         if self.config.channels.qq.enabled:
             try:

@@ -109,7 +109,7 @@ That's it! You have a working AI assistant in 2 minutes.
 
 ## 💬 Chat Apps
 
-Talk to your nanobot through Telegram, WhatsApp, Feishu, or QQ — anytime, anywhere.
+Talk to your nanobot through Telegram, WhatsApp, Feishu, DingTalk, or QQ — anytime, anywhere.
 
 | Channel | Setup |
 |---------|-------|
@@ -225,6 +225,42 @@ nanobot gateway
 </details>
 
 <details>
+<summary><b>DingTalk / DingDing</b></summary>
+
+Uses DingTalk Stream Mode, so local development does not need a public callback URL.
+
+**1. Create a robot app**
+- Create an internal DingTalk robot app in DingTalk Developer Console
+- Enable bot capability and select Stream Mode for message receiving
+- Copy the Client ID and Client Secret
+
+**2. Configure**
+
+```json
+{
+  "channels": {
+    "dingtalk": {
+      "enabled": true,
+      "clientId": "YOUR_CLIENT_ID",
+      "clientSecret": "YOUR_CLIENT_SECRET",
+      "allowFrom": ["USER_STAFF_ID"]
+    }
+  }
+}
+```
+
+`allowFrom` accepts DingTalk `senderStaffId` first, with encrypted `senderId` also supported.
+Replies use the `sessionWebhook` included in incoming robot messages.
+
+**3. Run**
+
+```bash
+nanobot gateway
+```
+
+</details>
+
+<details>
 <summary><b>Feishu</b></summary>
 
 Uses Feishu/Lark event WebSocket, so local development does not need a public callback URL.
@@ -292,6 +328,12 @@ nanobot gateway
       "appSecret": "xxx",
       "allowFrom": ["ou_xxx"]
     },
+    "dingtalk": {
+      "enabled": false,
+      "clientId": "YOUR_CLIENT_ID",
+      "clientSecret": "YOUR_CLIENT_SECRET",
+      "allowFrom": ["USER_STAFF_ID"]
+    },
     "qq": {
       "enabled": false,
       "appId": "YOUR_APP_ID",
@@ -352,7 +394,7 @@ nanobot/
 │   ├── skills.py   #    Skills loader
 │   └── tools/      #    Built-in tools
 ├── skills/         # 🎯 Bundled skills (github, weather, tmux...)
-├── channels/       # 📱 Telegram, WhatsApp, Feishu, QQ
+├── channels/       # 📱 Telegram, WhatsApp, Feishu, DingTalk, QQ
 ├── bus/            # 🚌 Message routing
 ├── cron/           # ⏰ Scheduled tasks
 ├── providers/      # 🤖 LLM providers (OpenRouter, etc.)

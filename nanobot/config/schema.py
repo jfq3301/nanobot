@@ -29,6 +29,14 @@ class FeishuConfig(BaseModel):
     allow_from: list[str] = Field(default_factory=list)  # Allowed open_id/user_id values
 
 
+class DingDingConfig(BaseModel):
+    """DingTalk/DingDing channel configuration."""
+    enabled: bool = False
+    client_id: str = ""  # DingTalk Client ID / AppKey
+    client_secret: str = ""  # DingTalk Client Secret / AppSecret
+    allow_from: list[str] = Field(default_factory=list)  # Allowed senderStaffId/senderId values
+
+
 class QQConfig(BaseModel):
     """Official QQ Bot channel configuration."""
     enabled: bool = False
@@ -45,6 +53,7 @@ class ChannelsConfig(BaseModel):
     whatsapp: WhatsAppConfig = Field(default_factory=WhatsAppConfig)
     telegram: TelegramConfig = Field(default_factory=TelegramConfig)
     feishu: FeishuConfig = Field(default_factory=FeishuConfig)
+    dingtalk: DingDingConfig = Field(default_factory=DingDingConfig)
     qq: QQConfig = Field(default_factory=QQConfig)
 
 

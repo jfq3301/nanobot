@@ -378,6 +378,13 @@ def channels_status():
         "app credentials set" if fs.app_id and fs.app_secret else "app credentials missing"
     )
 
+    dd = config.channels.dingtalk
+    table.add_row(
+        "DingTalk",
+        "✓" if dd.enabled else "✗",
+        "client credentials set" if dd.client_id and dd.client_secret else "client credentials missing"
+    )
+
     qq = config.channels.qq
     table.add_row(
         "QQ",
