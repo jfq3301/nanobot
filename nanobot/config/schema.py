@@ -29,11 +29,23 @@ class FeishuConfig(BaseModel):
     allow_from: list[str] = Field(default_factory=list)  # Allowed open_id/user_id values
 
 
+class QQConfig(BaseModel):
+    """Official QQ Bot channel configuration."""
+    enabled: bool = False
+    app_id: str = ""  # QQ Bot AppID
+    app_secret: str = ""  # QQ Bot AppSecret/clientSecret
+    api_base: str = "https://api.sgroup.qq.com"  # Official OpenAPI base URL
+    auth_url: str = "https://bots.qq.com/app/getAppAccessToken"  # AccessToken URL
+    intents: int = 1 << 25  # GROUP_AND_C2C_EVENT by default
+    allow_from: list[str] = Field(default_factory=list)  # Allowed openid/member_openid values
+
+
 class ChannelsConfig(BaseModel):
     """Configuration for chat channels."""
     whatsapp: WhatsAppConfig = Field(default_factory=WhatsAppConfig)
     telegram: TelegramConfig = Field(default_factory=TelegramConfig)
     feishu: FeishuConfig = Field(default_factory=FeishuConfig)
+    qq: QQConfig = Field(default_factory=QQConfig)
 
 
 class AgentDefaults(BaseModel):

@@ -70,7 +70,7 @@ def onboard():
     console.print("  1. Add your API key to [cyan]~/.nanobot/config.json[/cyan]")
     console.print("     Get one at: https://openrouter.ai/keys")
     console.print("  2. Chat: [cyan]nanobot agent -m \"Hello!\"[/cyan]")
-    console.print("\n[dim]Want Telegram/WhatsApp? See: https://github.com/HKUDS/nanobot#-chat-apps[/dim]")
+    console.print("\n[dim]Want chat apps? See: https://github.com/HKUDS/nanobot#-chat-apps[/dim]")
 
 
 
@@ -376,6 +376,13 @@ def channels_status():
         "Feishu",
         "✓" if fs.enabled else "✗",
         "app credentials set" if fs.app_id and fs.app_secret else "app credentials missing"
+    )
+
+    qq = config.channels.qq
+    table.add_row(
+        "QQ",
+        "✓" if qq.enabled else "✗",
+        "app credentials set" if qq.app_id and qq.app_secret else "app credentials missing"
     )
     
     console.print(table)

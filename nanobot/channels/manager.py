@@ -64,9 +64,20 @@ class ChannelManager:
                 logger.info("Feishu channel enabled")
             except ImportError as e:
                 logger.warning(f"Feishu channel not available: {e}")
+
+        # QQ channel
+        if self.config.channels.qq.enabled:
+            try:
+                from nanobot.channels.qq import QQChannel
+                self.channels["qq"] = QQChannel(
+                    self.config.channels.qq, self.bus
+                )
+                logger.info("QQ channel enabled")
+            except ImportError as e:
+                logger.warning(f"QQ channel not available: {e}")
     
     async def start_all(self) -> None:
-        """Start WhatsApp channel and the outbound dispatcher."""
+        """Start all enabled channels and the outbound dispatcher."""
         if not self.channels:
             logger.warning("No channels enabled")
             return
@@ -74,7 +85,7 @@ class ChannelManager:
         # Start outbound dispatcher
         self._dispatch_task = asyncio.create_task(self._dispatch_outbound())
         
-        # Start WhatsApp channel
+        # Start all channels
         tasks = []
         for name, channel in self.channels.items():
             logger.info(f"Starting {name} channel...")

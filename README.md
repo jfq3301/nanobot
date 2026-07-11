@@ -109,13 +109,14 @@ That's it! You have a working AI assistant in 2 minutes.
 
 ## 💬 Chat Apps
 
-Talk to your nanobot through Telegram, WhatsApp, or Feishu — anytime, anywhere.
+Talk to your nanobot through Telegram, WhatsApp, Feishu, or QQ — anytime, anywhere.
 
 | Channel | Setup |
 |---------|-------|
 | **Telegram** | Easy (just a token) |
 | **WhatsApp** | Medium (scan QR) |
 | **Feishu** | Medium (custom app + event subscription) |
+| **QQ** | Medium (official QQ Bot API) |
 
 <details>
 <summary><b>Telegram</b> (Recommended)</summary>
@@ -181,6 +182,43 @@ nanobot channels login
 nanobot channels login
 
 # Terminal 2
+nanobot gateway
+```
+
+</details>
+
+<details>
+<summary><b>QQ</b></summary>
+
+Uses Tencent's official QQ Bot API through the WebSocket Gateway plus REST APIs.
+
+**1. Create a QQ bot**
+- Open QQ Open Platform and create a bot
+- Copy the bot `AppID` and `AppSecret`
+- Add test users/groups in sandbox mode when the bot has not passed review
+
+**2. Configure**
+
+```json
+{
+  "channels": {
+    "qq": {
+      "enabled": true,
+      "appId": "YOUR_APP_ID",
+      "appSecret": "YOUR_APP_SECRET",
+      "allowFrom": ["USER_OR_MEMBER_OPENID"]
+    }
+  }
+}
+```
+
+`allowFrom` accepts official QQ `user_openid`, `member_openid`, or channel user IDs.
+Private replies use internal chat IDs like `private:{user_openid}`; group replies use
+`group:{group_openid}`.
+
+**3. Run**
+
+```bash
 nanobot gateway
 ```
 
@@ -253,6 +291,13 @@ nanobot gateway
       "appId": "cli_xxx",
       "appSecret": "xxx",
       "allowFrom": ["ou_xxx"]
+    },
+    "qq": {
+      "enabled": false,
+      "appId": "YOUR_APP_ID",
+      "appSecret": "YOUR_APP_SECRET",
+      "intents": 33554432,
+      "allowFrom": ["USER_OR_MEMBER_OPENID"]
     }
   },
   "tools": {
@@ -307,7 +352,7 @@ nanobot/
 │   ├── skills.py   #    Skills loader
 │   └── tools/      #    Built-in tools
 ├── skills/         # 🎯 Bundled skills (github, weather, tmux...)
-├── channels/       # 📱 Telegram, WhatsApp
+├── channels/       # 📱 Telegram, WhatsApp, Feishu, QQ
 ├── bus/            # 🚌 Message routing
 ├── cron/           # ⏰ Scheduled tasks
 ├── providers/      # 🤖 LLM providers (OpenRouter, etc.)

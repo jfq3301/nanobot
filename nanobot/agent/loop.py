@@ -97,7 +97,9 @@ class AgentLoop:
                     await self.bus.publish_outbound(OutboundMessage(
                         channel=msg.channel,
                         chat_id=msg.chat_id,
-                        content=f"Sorry, I encountered an error: {str(e)}"
+                        content=f"Sorry, I encountered an error: {str(e)}",
+                        reply_to=str(msg.metadata.get("message_id") or "") or None,
+                        metadata=msg.metadata,
                     ))
             except asyncio.TimeoutError:
                 continue
@@ -190,7 +192,9 @@ class AgentLoop:
         return OutboundMessage(
             channel=msg.channel,
             chat_id=msg.chat_id,
-            content=final_content
+            content=final_content,
+            reply_to=str(msg.metadata.get("message_id") or "") or None,
+            metadata=msg.metadata,
         )
     
     async def process_direct(self, content: str, session_key: str = "cli:direct") -> str:
