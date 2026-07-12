@@ -188,6 +188,45 @@ nanobot gateway
 </details>
 
 <details>
+<summary><b>WeChat</b></summary>
+
+Uses the Weixin HTTP long-poll channel for personal WeChat with QR-code login.
+No local WeChat desktop client is required.
+
+**1. Log in**
+
+```bash
+nanobot channels login weixin
+# Scan QR with WeChat
+```
+
+**2. Configure**
+
+```json
+{
+  "channels": {
+    "weixin": {
+      "enabled": true,
+      "allowFrom": ["*"]
+    }
+  }
+}
+```
+
+Optional fields:
+- `routeTag`: sent as the `SKRouteTag` header when your upstream requires routing.
+- `stateDir`: login-state directory. Defaults to `~/.nanobot/weixin/`.
+- `token`: manually set bot token. Usually omitted because login saves it in `stateDir`.
+
+**3. Run**
+
+```bash
+nanobot gateway
+```
+
+</details>
+
+<details>
 <summary><b>QQ</b></summary>
 
 Uses Tencent's official QQ Bot API through the WebSocket Gateway plus REST APIs.
@@ -334,6 +373,13 @@ nanobot gateway
       "clientSecret": "YOUR_CLIENT_SECRET",
       "allowFrom": ["USER_STAFF_ID"]
     },
+    "weixin": {
+      "enabled": false,
+      "allowFrom": ["*"],
+      "routeTag": null,
+      "stateDir": "",
+      "pollTimeout": 35
+    },
     "qq": {
       "enabled": false,
       "appId": "YOUR_APP_ID",
@@ -364,6 +410,7 @@ nanobot gateway
 | `nanobot gateway` | Start the gateway |
 | `nanobot status` | Show status |
 | `nanobot channels login` | Link WhatsApp (scan QR) |
+| `nanobot channels login weixin` | Link personal WeChat (scan QR) |
 | `nanobot channels status` | Show channel status |
 
 <details>
@@ -394,7 +441,7 @@ nanobot/
 │   ├── skills.py   #    Skills loader
 │   └── tools/      #    Built-in tools
 ├── skills/         # 🎯 Bundled skills (github, weather, tmux...)
-├── channels/       # 📱 Telegram, WhatsApp, Feishu, DingTalk, QQ
+├── channels/       # 📱 Telegram, WhatsApp, WeChat, Feishu, DingTalk, QQ
 ├── bus/            # 🚌 Message routing
 ├── cron/           # ⏰ Scheduled tasks
 ├── providers/      # 🤖 LLM providers (OpenRouter, etc.)

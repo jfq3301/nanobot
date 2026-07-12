@@ -5,7 +5,6 @@ from typing import Any
 
 from loguru import logger
 
-from nanobot.bus.events import OutboundMessage
 from nanobot.bus.queue import MessageBus
 from nanobot.channels.base import BaseChannel
 from nanobot.config.schema import Config
@@ -86,6 +85,17 @@ class ChannelManager:
                 logger.info("QQ channel enabled")
             except ImportError as e:
                 logger.warning(f"QQ channel not available: {e}")
+
+        # WeChat/Weixin channel
+        if self.config.channels.weixin.enabled:
+            try:
+                from nanobot.channels.weixin import WeixinChannel
+                self.channels["weixin"] = WeixinChannel(
+                    self.config.channels.weixin, self.bus
+                )
+                logger.info("Weixin channel enabled")
+            except ImportError as e:
+                logger.warning(f"Weixin channel not available: {e}")
     
     async def start_all(self) -> None:
         """Start all enabled channels and the outbound dispatcher."""

@@ -72,7 +72,7 @@ class BaseChannel(ABC):
         if not allow_list:
             return True
         
-        return str(sender_id) in allow_list
+        return "*" in allow_list or str(sender_id) in allow_list
     
     async def _handle_message(
         self,

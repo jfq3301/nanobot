@@ -48,6 +48,18 @@ class QQConfig(BaseModel):
     allow_from: list[str] = Field(default_factory=list)  # Allowed openid/member_openid values
 
 
+class WeixinConfig(BaseModel):
+    """Personal WeChat/Weixin channel configuration."""
+    enabled: bool = False
+    allow_from: list[str] = Field(default_factory=list)
+    base_url: str = "https://ilinkai.weixin.qq.com"
+    cdn_base_url: str = "https://novac2c.cdn.weixin.qq.com/c2c"
+    route_tag: str | int | None = None
+    token: str = ""
+    state_dir: str = ""
+    poll_timeout: int = 35
+
+
 class ChannelsConfig(BaseModel):
     """Configuration for chat channels."""
     whatsapp: WhatsAppConfig = Field(default_factory=WhatsAppConfig)
@@ -55,6 +67,7 @@ class ChannelsConfig(BaseModel):
     feishu: FeishuConfig = Field(default_factory=FeishuConfig)
     dingtalk: DingDingConfig = Field(default_factory=DingDingConfig)
     qq: QQConfig = Field(default_factory=QQConfig)
+    weixin: WeixinConfig = Field(default_factory=WeixinConfig)
 
 
 class AgentDefaults(BaseModel):

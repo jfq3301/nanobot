@@ -39,6 +39,9 @@ dev = [
     "pytest-asyncio>=0.21.0",
     "ruff>=0.1.0",
 ]
+weixin = [
+    "qrcode>=7.4",
+]
 
 [project.scripts]
 nanobot = "nanobot.cli.commands:app"

@@ -391,6 +391,13 @@ def channels_status():
         "✓" if qq.enabled else "✗",
         "app credentials set" if qq.app_id and qq.app_secret else "app credentials missing"
     )
+
+    wx = config.channels.weixin
+    table.add_row(
+        "Weixin",
+        "✓" if wx.enabled else "✗",
+        "token/state configured" if wx.token or wx.state_dir else "interactive login"
+    )
     
     console.print(table)
 
@@ -438,33 +445,62 @@ def _get_bridge_dir() -> Path:
     # Install and build
     try:
         console.print("  Installing dependencies...")
-        subprocess.run(["npm", "install"], cwd=user_bridge, check=True, capture_output=True)
+        subprocess.run(["npm", "install"], cwd=user_bridge, check=True)
         
         console.print("  Building...")
-        subprocess.run(["npm", "run", "build"], cwd=user_bridge, check=True, capture_output=True)
+        subprocess.run(["npm", "run", "build"], cwd=user_bridge, check=True)
         
         console.print("[green]✓[/green] Bridge ready\n")
     except subprocess.CalledProcessError as e:
         console.print(f"[red]Build failed: {e}[/red]")
-        if e.stderr:
-            console.print(f"[dim]{e.stderr.decode()[:500]}[/dim]")
         raise typer.Exit(1)
     
     return user_bridge
 
 
 @channels_app.command("login")
-def channels_login():
+def channels_login(
+    channel_name: str = typer.Argument("whatsapp", help="Channel name: whatsapp or weixin"),
+    force: bool = typer.Option(False, "--force", "-f", help="Force re-authentication"),
+    platform: str | None = typer.Option(None, "--platform", "-p", help="Legacy alias for channel name"),
+    port: int | None = typer.Option(None, "--port", help="Bridge WebSocket port"),
+):
     """Link device via QR code."""
+    import os
     import subprocess
-    
+
+    if platform:
+        channel_name = platform
+    if channel_name == "wechat":
+        channel_name = "weixin"
+
+    if channel_name == "weixin":
+        from nanobot.channels.weixin import WeixinChannel
+        from nanobot.config.loader import load_config
+
+        config = load_config()
+        channel = WeixinChannel(config.channels.weixin, bus=None)
+        success = asyncio.run(channel.login(force=force))
+        if not success:
+            raise typer.Exit(1)
+        return
+
+    if channel_name != "whatsapp":
+        console.print("[red]Unsupported channel. Use 'whatsapp' or 'weixin'.[/red]")
+        raise typer.Exit(1)
+
     bridge_dir = _get_bridge_dir()
+    bridge_port = port or 3001
     
-    console.print(f"{__logo__} Starting bridge...")
+    console.print(f"{__logo__} Starting whatsapp bridge on ws://localhost:{bridge_port}...")
     console.print("Scan the QR code to connect.\n")
     
     try:
-        subprocess.run(["npm", "start"], cwd=bridge_dir, check=True)
+        env = {
+            "BRIDGE_PORT": str(bridge_port),
+            "AUTH_DIR": str(Path.home() / ".nanobot" / "whatsapp-auth"),
+        }
+        subprocess.run(["npm", "start"], cwd=bridge_dir, check=True, env={**os.environ, **env})
     except subprocess.CalledProcessError as e:
         console.print(f"[red]Bridge failed: {e}[/red]")
     except FileNotFoundError:
